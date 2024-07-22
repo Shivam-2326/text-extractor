@@ -6,18 +6,23 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class UploadService {
-  private uploadUrl = 'YOUR_API_ENDPOINT_HERE';
+  private apiUrl = 'http://127.0.0.1:5000';
+  private uploadUrl = this.apiUrl + '/extract_text';
 
   constructor(private http: HttpClient) {}
 
   uploadFile(file: File): Observable<any> {
     const formData: FormData = new FormData();
-    formData.append('file', file, file.name);
+    formData.append('image', file, file.name);
 
     return this.http.post(this.uploadUrl, formData, {
       headers: new HttpHeaders({
         enctype: 'multipart/form-data',
       }),
     });
+  }
+
+  getImages() {
+    return this.http.get(this.apiUrl + '/images');
   }
 }

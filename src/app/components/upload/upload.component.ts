@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UploadService } from '../../services/upload/upload.service';
 import { CommonModule } from '@angular/common';
 
@@ -9,11 +9,28 @@ import { CommonModule } from '@angular/common';
   templateUrl: './upload.component.html',
   styleUrl: './upload.component.scss',
 })
-export class UploadComponent {
+export class UploadComponent implements OnInit {
   selectedFile: File | null = null;
   imagePreview: string | ArrayBuffer | null = null;
 
+  images: any[] = [];
+
   constructor(private uploadService: UploadService) {}
+
+  ngOnInit(): void {
+    this.getImages();
+  }
+
+  getImages() {
+    this.images = [];
+    this.uploadService.getImages().subscribe({
+      next: (res: any) => {
+        if (res) {
+          this.images = res;
+        }
+      },
+    });
+  }
 
   onFileSelected(event: Event): void {
     const fileInput = event.target as HTMLInputElement;
@@ -30,16 +47,15 @@ export class UploadComponent {
 
   onUpload(): void {
     if (this.selectedFile) {
-      console.log(this.selectedFile);
-
-      // this.uploadService.uploadFile(this.selectedFile).subscribe(
-      //   (response) => {
-      //     console.log('Upload success', response);
-      //   },
-      //   (error) => {
-      //     console.error('Upload failed', error);
-      //   }
-      // );
+      this.uploadService.uploadFile(this.selectedFile).subscribe({
+        next: (response) => {
+          this.selectedFile = null;
+          this.getImages();
+        },
+        error: (error) => {
+          console.error('Upload failed', error);
+        },
+      });
     }
   }
 }

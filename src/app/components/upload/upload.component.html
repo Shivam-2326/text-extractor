@@ -1,7 +1,37 @@
-<div class="file-upload">
+<div class="banner file-upload">
     <input type="file" (change)="onFileSelected($event)" />
-    <div *ngIf="selectedFile">
+    <div *ngIf="selectedFile" class="d-flex flex-column">
         <img [src]="imagePreview" alt="Image Preview" width="200" />
-        <button (click)="onUpload()">Upload</button>
+        <button class="btn btn-primary mt-3" style="width: 94px;" (click)="onUpload()">Upload</button>
     </div>
 </div>
+
+<ng-container *ngIf="images.length!=0; else emptyTemplate">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">File Name</th>
+                <th scope="col">Image</th>
+                <th scope="col">Extracted Text</th>
+                <th scope="col">Bold Text</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let image of images;let i = index">
+                <td class="col-sm">{{ i+1 }}</td>
+                <td class="col-sm">{{ image.filename }}</td>
+                <td>
+                    <img class="col-sm img-fluid" [src]="'data:' + image.content_type + ';base64,' + image.image"
+                        alt="{{ image.filename }}">
+                </td>
+                <td>{{image.text}}</td>
+                <td>{{image.bold_text}}</td>
+            </tr>
+        </tbody>
+    </table>
+</ng-container>
+
+<ng-template #emptyTemplate>
+    <div class="alert">Please upload some image to see data.</div>
+</ng-template>
